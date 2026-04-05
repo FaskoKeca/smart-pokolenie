@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Смарт Поколение</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { DEFAULT: '#1e293b', light: '#334155', dark: '#0f172a' },
+            orange: { DEFAULT: '#f97316', light: '#fb923c', dark: '#ea6c04' },
+            cream: '#faf8f5',
+            sand: '#f1ece4',
+          },
+          fontFamily: {
+            display: ['"Playfair Display"', 'serif'],
+            body: ['"Source Sans 3"', 'sans-serif'],
+          },
+          fontSize: {
+            base: ['18px', '1.7'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; font-size: 18px; }
+    body { font-family: 'Source Sans 3', sans-serif; background: #faf8f5; color: #1e293b; overflow-x: hidden; }
+
+    /* ── NAV ── */
+    .nav-link { position: relative; font-weight: 600; color: #1e293b; text-decoration: none; padding-bottom: 2px; transition: color .2s; }
+    .nav-link::after { content:''; position:absolute; left:0; bottom:0; width:0; height:2px; background:#f97316; transition: width .3s; }
+    .nav-link:hover { color: #f97316; }
+    .nav-link:hover::after { width: 100%; }
+
+    /* ── HERO ── */
+    .hero-bg {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 55%, #1e3a5f 100%);
+      position: relative; overflow: hidden;
+    }
+    .hero-bg::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 70% 40%, rgba(249,115,22,.18) 0%, transparent 70%);
+    }
+    .hero-dots {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(circle, rgba(249,115,22,.25) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse 90% 70% at 50% 50%, black 0%, transparent 100%);
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(249,115,22,.15); border: 1px solid rgba(249,115,22,.4);
+      color: #fb923c; padding: 6px 18px; border-radius: 999px; font-size: .85rem;
+      font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+      animation: fadeDown .7s ease both;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      line-height: 1.1; font-weight: 900; color: #fff;
+      animation: fadeUp .8s .2s ease both;
+    }
+    .hero-title span { color: #f97316; }
+    .hero-sub {
+      color: rgba(255,255,255,.75); max-width: 560px;
+      font-size: 1.15rem; line-height: 1.75;
+      animation: fadeUp .8s .35s ease both;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: #f97316; color: #fff; font-weight: 700;
+      padding: 16px 36px; border-radius: 8px; border: none; cursor: pointer;
+      font-size: 1.05rem; text-decoration: none;
+      transition: background .2s, transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 24px rgba(249,115,22,.4);
+      animation: fadeUp .8s .5s ease both;
+    }
+    .btn-primary:hover { background: #ea6c04; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(249,115,22,.5); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: transparent; color: rgba(255,255,255,.85); font-weight: 600;
+      padding: 16px 32px; border-radius: 8px; border: 2px solid rgba(255,255,255,.3);
+      font-size: 1.05rem; text-decoration: none; cursor: pointer;
+      transition: border-color .2s, color .2s, transform .2s;
+      animation: fadeUp .8s .6s ease both;
+    }
+    .btn-secondary:hover { border-color: #f97316; color: #f97316; transform: translateY(-2px); }
+    .hero-stat { animation: fadeUp .8s .7s ease both; }
+    .stat-num { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 900; color: #f97316; }
+
+    /* ── SECTION HEADERS ── */
+    .section-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: #f97316; font-weight: 700; font-size: .85rem;
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 12px;
+    }
+    .section-label::before { content:''; display:block; width:28px; height:2px; background:#f97316; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 900; line-height: 1.2; color: #1e293b; }
+
+    /* ── ABOUT ── */
+    .about-card {
+      background: #fff; border-radius: 16px; padding: 32px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 12px rgba(30,41,59,.07);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .about-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(30,41,59,.13); }
+    .icon-box {
+      width: 56px; height: 56px; border-radius: 14px;
+      background: linear-gradient(135deg, #fff7ed, #fed7aa);
+      display: flex; align-items: center; justify-content: center;
+      color: #f97316; font-size: 1.4rem; margin-bottom: 18px;
+      flex-shrink: 0;
+    }
+
+    /* ── TIMELINE ── */
+    .timeline-wrapper { position: relative; }
+    .timeline-wrapper::before {
+      content: ''; position: absolute; left: 32px; top: 0; bottom: 0;
+      width: 3px; background: linear-gradient(to bottom, #f97316, #1e293b);
+      border-radius: 4px;
+    }
+    @media (min-width: 768px) {
+      .timeline-wrapper::before { left: 50%; transform: translateX(-50%); }
+    }
+    .tl-item { position: relative; padding-left: 80px; margin-bottom: 48px; }
+    @media (min-width: 768px) {
+      .tl-item { padding-left: 0; display: grid; grid-template-columns: 1fr 80px 1fr; gap: 0; align-items: start; }
+      .tl-item:nth-child(even) .tl-card { grid-column: 3; }
+      .tl-item:nth-child(even) .tl-center { grid-column: 2; }
+      .tl-item:nth-child(even) .tl-spacer { grid-column: 1; }
+      .tl-item:nth-child(odd) .tl-card { grid-column: 1; text-align: right; }
+      .tl-item:nth-child(odd) .tl-center { grid-column: 2; }
+      .tl-item:nth-child(odd) .tl-spacer { grid-column: 3; }
+    }
+    .tl-dot {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #f97316; border: 4px solid #faf8f5;
+      box-shadow: 0 0 0 3px #f97316;
+      position: absolute; left: 23px; top: 12px; z-index: 2;
+    }
+    @media (min-width: 768px) {
+      .tl-dot { position: static; margin: 16px auto 0; }
+    }
+    .tl-center { display: flex; flex-direction: column; align-items: center; }
+    .tl-card {
+      background: #fff; border-radius: 14px; padding: 24px 28px;
+      border: 1px solid #e2e8f0; box-shadow: 0 2px 12px rgba(30,41,59,.06);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .tl-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(30,41,59,.12); }
+    .tl-date { font-size: .82rem; font-weight: 700; color: #f97316; letter-spacing: .04em; margin-bottom: 6px; }
+    .tl-phase { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+    .tl-desc { color: #64748b; font-size: .92rem; line-height: 1.6; }
+
+    /* ── GOAL CARDS ── */
+    .goal-card {
+      background: #fff; border-radius: 20px; padding: 36px 32px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 16px rgba(30,41,59,.07);
+      transition: transform .3s, box-shadow .3s;
+      position: relative; overflow: hidden;
+    }
+    .goal-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 4px; background: linear-gradient(90deg, #f97316, #fb923c);
+      transform: scaleX(0); transition: transform .3s; transform-origin: left;
+    }
+    .goal-card:hover { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(30,41,59,.14); }
+    .goal-card:hover::after { transform: scaleX(1); }
+    .goal-num {
+      font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900;
+      color: rgba(249,115,22,.12); line-height: 1; position: absolute; top: 16px; right: 24px;
+    }
+
+    /* ── PARTNERS ── */
+    .partner-chip {
+      display: flex; align-items: center; gap: 14px;
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 999px;
+      padding: 12px 24px; font-weight: 600; color: #1e293b;
+      box-shadow: 0 2px 8px rgba(30,41,59,.06);
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+    }
+    .partner-chip:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,41,59,.12); border-color: #f97316; }
+    .budget-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px dashed #e2e8f0; }
+    .budget-row:last-of-type { border-bottom: none; }
+
+    /* ── CONTACT / FOOTER ── */
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-weight: 600; margin-bottom: 8px; color: #1e293b; }
+    .form-input {
+      width: 100%; padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 10px;
+      font-family: 'Source Sans 3', sans-serif; font-size: 1rem; color: #1e293b;
+      background: #fff; transition: border-color .2s, box-shadow .2s; outline: none;
+    }
+    .form-input:focus { border-color: #f97316; box-shadow: 0 0 0 4px rgba(249,115,22,.12); }
+    .form-input::placeholder { color: #94a3b8; }
+
+    /* ── MOBILE MENU ── */
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: flex; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeDown { from { opacity:0; transform:translateY(-14px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #f97316; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAVBAR ═══════════════════════════ -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/60 shadow-sm">
+  <div class="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
+    <!-- Logo -->
+    <a href="#hero" class="flex items-center gap-2 no-underline">
+      <div class="w-8 h-8 rounded-lg bg-orange flex items-center justify-center">
+        <i class="fa-solid fa-bolt text-white text-sm"></i>
+      </div>
+      <span class="font-display font-bold text-navy text-lg leading-tight">Смарт<br><span class="text-orange">Поколение</span></span>
+    </a>
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex items-center gap-8">
+      <a href="#about" class="nav-link">За проекта</a>
+      <a href="#timeline" class="nav-link">График</a>
+      <a href="#goals" class="nav-link">Цели</a>
+      <a href="#partners" class="nav-link">Партньори</a>
+      <a href="#contact" class="btn-primary !py-2.5 !px-5 !text-sm">Свържи се с нас</a>
+    </nav>
+    <!-- Hamburger -->
+    <button id="menu-btn" class="md:hidden flex flex-col gap-1.5 p-2 cursor-pointer" aria-label="Меню">
+      <span class="w-6 h-0.5 bg-navy block transition-all duration-300" id="bar1"></span>
+      <span class="w-6 h-0.5 bg-navy block transition-all duration-300" id="bar2"></span>
+      <span class="w-6 h-0.5 bg-navy block transition-all duration-300" id="bar3"></span>
+    </button>
+  </div>
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="md:hidden flex-col bg-white border-t border-slate-100 px-6 pb-4 gap-1">
+    <a href="#about" class="block py-3 font-semibold text-navy border-b border-slate-100 hover:text-orange transition-colors">За проекта</a>
+    <a href="#timeline" class="block py-3 font-semibold text-navy border-b border-slate-100 hover:text-orange transition-colors">График</a>
+    <a href="#goals" class="block py-3 font-semibold text-navy border-b border-slate-100 hover:text-orange transition-colors">Цели</a>
+    <a href="#partners" class="block py-3 font-semibold text-navy border-b border-slate-100 hover:text-orange transition-colors">Партньори</a>
+    <a href="#contact" class="btn-primary mt-3 justify-center">Свържи се с нас</a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<section id="hero" class="hero-bg min-h-screen flex items-center pt-16">
+  <div class="hero-dots"></div>
+  <div class="max-w-6xl mx-auto px-6 py-24 relative z-10 w-full">
+    <div class="max-w-2xl">
+      <div class="badge mb-6">
+        <i class="fa-solid fa-graduation-cap"></i>
+        Ученически социален проект 2025–2026
+      </div>
+      <h1 class="hero-title mb-6">
+        Свързваме<br>поколенията<br>с <span>дигиталния</span><br>свят.
+      </h1>
+      <p class="hero-sub mb-10">
+        <strong class="text-white">Смарт Поколение</strong> е инициатива, в която ученици от 12. клас обучават хора над 65 години как да използват съвременните технологии уверено и безопасно.
+      </p>
+      <div class="flex flex-wrap gap-4 mb-16">
+        <a href="#contact" class="btn-primary">
+          <i class="fa-solid fa-envelope"></i>
+          Свържи се с нас
+        </a>
+        <a href="#about" class="btn-secondary">
+          <i class="fa-solid fa-arrow-down"></i>
+          Научи повече
+        </a>
+      </div>
+      <!-- Stats -->
+      <div class="hero-stat flex flex-wrap gap-10 pt-8 border-t border-white/10">
+        <div>
+          <div class="stat-num">12+</div>
+          <div class="text-white/60 text-sm font-medium mt-1">ученика обучители</div>
+        </div>
+        <div>
+          <div class="stat-num">30+</div>
+          <div class="text-white/60 text-sm font-medium mt-1">пенсионери участници</div>
+        </div>
+        <div>
+          <div class="stat-num">8</div>
+          <div class="text-white/60 text-sm font-medium mt-1">месеца програма</div>
+        </div>
+        <div>
+          <div class="stat-num">3</div>
+          <div class="text-white/60 text-sm font-medium mt-1">партньорски организации</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Decorative arc -->
+  <div class="absolute bottom-0 left-0 right-0 overflow-hidden leading-none" style="height:60px;">
+    <svg viewBox="0 0 1200 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+      <path d="M0,60 C300,0 900,0 1200,60 L1200,60 L0,60 Z" fill="#faf8f5"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ ABOUT ═══════════════════════════ -->
+<section id="about" class="py-24 bg-cream">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+      <!-- Text -->
+      <div class="fade-in">
+        <div class="section-label">За нас</div>
+        <h2 class="section-title mb-6">Мисията ни:<br>мост между два свята</h2>
+        <p class="text-slate-600 leading-relaxed mb-6">
+          „Смарт Поколение" е доброволчески образователен проект, роден от убеждението, че <strong>технологиите трябва да са достъпни за всеки</strong> – независимо от възрастта. Ученици от 12. клас стават ментори на хора над 65 години, като ги водят стъпка по стъпка в дигиталния свят.
+        </p>
+        <p class="text-slate-600 leading-relaxed mb-8">
+          Обученията се провеждат в библиотеката и клуба на пенсионера веднъж седмично. Всяка сесия е практически ориентирана – участниците учат с телефоните и таблетите си в ръка, с търпение и усмивка.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <span class="inline-flex items-center gap-2 bg-white border border-orange/30 text-orange font-semibold px-4 py-2 rounded-full text-sm">
+            <i class="fa-solid fa-check-circle"></i> Безплатно участие
+          </span>
+          <span class="inline-flex items-center gap-2 bg-white border border-orange/30 text-orange font-semibold px-4 py-2 rounded-full text-sm">
+            <i class="fa-solid fa-check-circle"></i> Практически занимания
+          </span>
+          <span class="inline-flex items-center gap-2 bg-white border border-orange/30 text-orange font-semibold px-4 py-2 rounded-full text-sm">
+            <i class="fa-solid fa-check-circle"></i> Малки групи
+          </span>
+        </div>
+      </div>
+      <!-- Cards -->
+      <div class="grid gap-5 fade-in">
+        <div class="about-card flex gap-5">
+          <div class="icon-box"><i class="fa-solid fa-user-graduate"></i></div>
+          <div>
+            <h3 class="font-display font-bold text-navy text-lg mb-2">Ученици обучители</h3>
+            <p class="text-slate-600 text-sm leading-relaxed">Дванадесетокласници доброволно обучават и предават дигитални умения с разбиране и съпричастност.</p>
+          </div>
+        </div>
+        <div class="about-card flex gap-5">
+          <div class="icon-box"><i class="fa-solid fa-heart"></i></div>
+          <div>
+            <h3 class="font-display font-bold text-navy text-lg mb-2">Пенсионери участници</h3>
+            <p class="text-slate-600 text-sm leading-relaxed">Хора над 65 години, желаещи да се свързват с близки, да пазаруват онлайн и да се защитят от измами.</p>
+          </div>
+        </div>
+        <div class="about-card flex gap-5">
+          <div class="icon-box"><i class="fa-solid fa-building-columns"></i></div>
+          <div>
+            <h3 class="font-display font-bold text-navy text-lg mb-2">Общностни пространства</h3>
+            <p class="text-slate-600 text-sm leading-relaxed">Занималните се провеждат в местната библиотека и клуба на пенсионера – познати и уютни места.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ TIMELINE ═══════════════════════════ -->
+<section id="timeline" class="py-24 bg-white">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="text-center mb-16 fade-in">
+      <div class="section-label justify-center">Програма</div>
+      <h2 class="section-title">График на проекта</h2>
+      <p class="text-slate-500 mt-4 max-w-xl mx-auto">От проучване до финален празник – осем месеца смислена работа.</p>
+      <div class="inline-flex items-center gap-2 mt-4 bg-orange/10 text-orange font-semibold px-5 py-2 rounded-full text-sm">
+        <i class="fa-regular fa-calendar"></i>
+        01.10.2025 — 01.06.2026
+      </div>
+    </div>
+
+    <div class="timeline-wrapper fade-in">
+
+      <!-- Item 1 -->
+      <div class="tl-item">
+        <div class="hidden md:block tl-spacer"></div>
+        <div class="hidden md:flex tl-center"><div class="tl-dot"></div></div>
+        <div class="tl-dot md:hidden"></div>
+        <div class="tl-card">
+          <div class="tl-date"><i class="fa-regular fa-calendar-days mr-1"></i>Октомври 2025</div>
+          <div class="tl-phase">Проучване и планиране</div>
+          <div class="tl-desc">Анкети сред пенсионерите; идентифициране на нуждите; формиране на ученически екип и план на обученията.</div>
+        </div>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="tl-item">
+        <div class="tl-card md:text-right">
+          <div class="tl-date"><i class="fa-regular fa-calendar-days mr-1"></i>Ноември 2025</div>
+          <div class="tl-phase">Подготовка на материали</div>
+          <div class="tl-desc">Изготвяне на наръчници с едри букви; подготовка на учебна програма; обучение на менторите.</div>
+        </div>
+        <div class="hidden md:flex tl-center"><div class="tl-dot"></div></div>
+        <div class="tl-dot md:hidden"></div>
+        <div class="hidden md:block tl-spacer"></div>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="tl-item">
+        <div class="hidden md:block tl-spacer"></div>
+        <div class="hidden md:flex tl-center"><div class="tl-dot"></div></div>
+        <div class="tl-dot md:hidden"></div>
+        <div class="tl-card">
+          <div class="tl-date"><i class="fa-regular fa-calendar-days mr-1"></i>Декември 2025 – Март 2026</div>
+          <div class="tl-phase">Активни обучения</div>
+          <div class="tl-desc">Седмични практически занятия: смартфони, видеообаждания, онлайн услуги, безопасност в интернет. Всяка сесия по 90 минути.</div>
+        </div>
+      </div>
+
+      <!-- Item 4 -->
+      <div class="tl-item">
+        <div class="tl-card md:text-right">
+          <div class="tl-date"><i class="fa-regular fa-calendar-days mr-1"></i>Април 2026</div>
+          <div class="tl-phase">Средносрочна оценка</div>
+          <div class="tl-desc">Анкетиране на участниците; анализ на напредъка; корекции в програмата при нужда.</div>
+        </div>
+        <div class="hidden md:flex tl-center"><div class="tl-dot"></div></div>
+        <div class="tl-dot md:hidden"></div>
+        <div class="hidden md:block tl-spacer"></div>
+      </div>
+
+      <!-- Item 5 -->
+      <div class="tl-item">
+        <div class="hidden md:block tl-spacer"></div>
+        <div class="hidden md:flex tl-center"><div class="tl-dot"></div></div>
+        <div class="tl-dot md:hidden"></div>
+        <div class="tl-card">
+          <div class="tl-date"><i class="fa-regular fa-calendar-days mr-1"></i>Май 2026</div>
+          <div class="tl-phase">Финален отчет и оценка</div>
+          <div class="tl-desc">Съставяне на окончателен доклад; измерване на резултатите; подготовка за финалното събитие.</div>
+        </div>
+      </div>
+
+      <!-- Item 6 -->
+      <div class="tl-item">
+        <div class="tl-card md:text-right" style="border-color:#f97316; background: linear-gradient(135deg, #fff7ed, #fff);">
+          <div class="tl-date text-orange"><i class="fa-solid fa-star mr-1"></i>01 Юни 2026</div>
+          <div class="tl-phase text-orange">Финално събитие 🎉</div>
+          <div class="tl-desc">Тържество за участниците и техните семейства. Демонстрации, сертификати и споделени истории за успех.</div>
+        </div>
+        <div class="hidden md:flex tl-center">
+          <div class="tl-dot" style="background:#f97316; box-shadow: 0 0 0 6px rgba(249,115,22,.25);"></div>
+        </div>
+        <div class="tl-dot md:hidden" style="background:#f97316; box-shadow: 0 0 0 6px rgba(249,115,22,.25);"></div>
+        <div class="hidden md:block tl-spacer"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ GOALS ═══════════════════════════ -->
+<section id="goals" class="py-24" style="background: linear-gradient(180deg, #f1ece4 0%, #faf8f5 100%);">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-16 fade-in">
+      <div class="section-label justify-center">Нашите цели</div>
+      <h2 class="section-title">Какво постигаме заедно</h2>
+      <p class="text-slate-500 mt-4 max-w-xl mx-auto">Всяка цел е измерима и реална – не просто добро пожелание.</p>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <!-- Card 1 -->
+      <div class="goal-card fade-in">
+        <div class="goal-num">01</div>
+        <div class="icon-box mb-5"><i class="fa-solid fa-mobile-screen-button"></i></div>
+        <h3 class="font-display font-bold text-navy text-xl mb-3">Дигитална увереност</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">Участниците научават да използват смартфон, таблет и компютър самостоятелно – за комуникация, информация и забавление.</p>
+        <div class="mt-5 pt-4 border-t border-slate-100">
+          <div class="flex items-center gap-2 text-orange font-semibold text-sm">
+            <i class="fa-solid fa-bullseye"></i> 30+ обучени
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="goal-card fade-in">
+        <div class="goal-num">02</div>
+        <div class="icon-box mb-5"><i class="fa-solid fa-people-group"></i></div>
+        <h3 class="font-display font-bold text-navy text-xl mb-3">Социална връзка</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">Видеообаждания с деца и внуци, участие в онлайн общности и намаляване на самотата – технологиите сближават.</p>
+        <div class="mt-5 pt-4 border-t border-slate-100">
+          <div class="flex items-center gap-2 text-orange font-semibold text-sm">
+            <i class="fa-solid fa-bullseye"></i> Редовна комуникация
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="goal-card fade-in">
+        <div class="goal-num">03</div>
+        <div class="icon-box mb-5"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3 class="font-display font-bold text-navy text-xl mb-3">Защита от измами</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">Участниците разпознават фишинг, фалшиви обаждания и онлайн измами. Дигиталната грамотност е и лична защита.</p>
+        <div class="mt-5 pt-4 border-t border-slate-100">
+          <div class="flex items-center gap-2 text-orange font-semibold text-sm">
+            <i class="fa-solid fa-bullseye"></i> 100% информирани
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="goal-card fade-in">
+        <div class="goal-num">04</div>
+        <div class="icon-box mb-5"><i class="fa-solid fa-hand-holding-heart"></i></div>
+        <h3 class="font-display font-bold text-navy text-xl mb-3">Взаимно учене</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">Учениците развиват емпатия, търпение и комуникативни умения. Двете поколения се обогатяват взаимно.</p>
+        <div class="mt-5 pt-4 border-t border-slate-100">
+          <div class="flex items-center gap-2 text-orange font-semibold text-sm">
+            <i class="fa-solid fa-bullseye"></i> 12 ученика менторa
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ PARTNERS & BUDGET ═══════════════════════════ -->
+<section id="partners" class="py-24 bg-white">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-16">
+
+      <!-- Partners -->
+      <div class="fade-in">
+        <div class="section-label">Партньори</div>
+        <h2 class="section-title mb-8">Заедно сме<br>по-силни</h2>
+        <div class="flex flex-col gap-4">
+          <div class="partner-chip">
+            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
+              <i class="fa-solid fa-school"></i>
+            </div>
+            <div>
+              <div class="font-bold text-navy">[Вашето училище]</div>
+              <div class="text-slate-500 text-sm">Координация, помещения, ученици</div>
+            </div>
+          </div>
+          <div class="partner-chip">
+            <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0">
+              <i class="fa-solid fa-book-open"></i>
+            </div>
+            <div>
+              <div class="font-bold text-navy">Местна библиотека</div>
+              <div class="text-slate-500 text-sm">Пространство за занимания и компютри</div>
+            </div>
+          </div>
+          <div class="partner-chip">
+            <div class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 flex-shrink-0">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div>
+              <div class="font-bold text-navy">Клуб на пенсионера</div>
+              <div class="text-slate-500 text-sm">Участници и популяризиране на програмата</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Budget -->
+      <div class="fade-in">
+        <div class="section-label">Бюджет</div>
+        <h2 class="section-title mb-8">Прозрачно<br>финансиране</h2>
+        <div class="bg-cream rounded-2xl p-6 border border-slate-200">
+          <div class="budget-row">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-orange/10 rounded-lg flex items-center justify-center text-orange text-sm">
+                <i class="fa-solid fa-print"></i>
+              </div>
+              <span class="font-semibold text-navy">Печат на наръчници</span>
+            </div>
+            <span class="font-bold text-navy">80 лв.</span>
+          </div>
+          <div class="budget-row">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-orange/10 rounded-lg flex items-center justify-center text-orange text-sm">
+                <i class="fa-solid fa-laptop"></i>
+              </div>
+              <span class="font-semibold text-navy">Технически материали</span>
+            </div>
+            <span class="font-bold text-navy">100 лв.</span>
+          </div>
+          <div class="budget-row">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-orange/10 rounded-lg flex items-center justify-center text-orange text-sm">
+                <i class="fa-solid fa-mug-hot"></i>
+              </div>
+              <span class="font-semibold text-navy">Освежителни за занимания</span>
+            </div>
+            <span class="font-bold text-navy">50 лв.</span>
+          </div>
+          <div class="budget-row">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-orange/10 rounded-lg flex items-center justify-center text-orange text-sm">
+                <i class="fa-solid fa-trophy"></i>
+              </div>
+              <span class="font-semibold text-navy">Сертификати и финален ден</span>
+            </div>
+            <span class="font-bold text-navy">80 лв.</span>
+          </div>
+          <div class="budget-row">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 bg-orange/10 rounded-lg flex items-center justify-center text-orange text-sm">
+                <i class="fa-solid fa-circle-info"></i>
+              </div>
+              <span class="font-semibold text-navy">Реклама и комуникация</span>
+            </div>
+            <span class="font-bold text-navy">40 лв.</span>
+          </div>
+          <!-- Total -->
+          <div class="mt-5 pt-4 border-t-2 border-orange flex justify-between items-center">
+            <span class="font-display font-bold text-navy text-xl">Общо</span>
+            <span class="font-display font-bold text-orange text-2xl">350 лв.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ CONTACT ═══════════════════════════ -->
+<section id="contact" class="py-24" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); position: relative; overflow: hidden;">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 80% 50%, rgba(249,115,22,.12) 0%, transparent 70%);"></div>
+  <div class="max-w-3xl mx-auto px-6 relative z-10">
+    <div class="text-center mb-12 fade-in">
+      <div class="section-label justify-center" style="color:#fb923c;">Контакт</div>
+      <h2 class="section-title mb-4" style="color:#fff;">Свържи се с нас</h2>
+      <p style="color:rgba(255,255,255,.65); max-width:480px; margin: 0 auto; line-height:1.7;">
+        Искате да участвате като доброволец, пенсионер или партньорска организация? Пишете ни!
+      </p>
+    </div>
+    <div class="bg-white rounded-2xl p-8 md:p-10 shadow-2xl fade-in">
+      <div class="grid md:grid-cols-2 gap-5 mb-5">
+        <div class="form-group mb-0">
+          <label class="form-label"><i class="fa-regular fa-user text-orange mr-2"></i>Вашето име</label>
+          <input type="text" class="form-input" placeholder="Иван Иванов" />
+        </div>
+        <div class="form-group mb-0">
+          <label class="form-label"><i class="fa-regular fa-building text-orange mr-2"></i>Вашето училище / организация</label>
+          <input type="text" class="form-input" placeholder="СУ „Иван Вазов"" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label"><i class="fa-regular fa-envelope text-orange mr-2"></i>Имейл адрес</label>
+        <input type="email" class="form-input" placeholder="ivanov@example.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label"><i class="fa-regular fa-comment-dots text-orange mr-2"></i>Съобщение</label>
+        <textarea class="form-input" rows="4" placeholder="Разкажете ни как бихте искали да се включите..."></textarea>
+      </div>
+      <button class="btn-primary w-full justify-center text-base" onclick="handleSubmit(this)">
+        <i class="fa-solid fa-paper-plane"></i>
+        Изпрати съобщение
+      </button>
+    </div>
+    <!-- Footer links -->
+    <div class="text-center mt-12 fade-in">
+      <p style="color:rgba(255,255,255,.4); font-size:.85rem;">
+        © 2025–2026 Смарт Поколение · Всички права запазени
+      </p>
+      <div class="flex justify-center gap-4 mt-4">
+        <a href="#hero" style="color:rgba(255,255,255,.4); text-decoration:none; font-size:.85rem; transition: color .2s;" onmouseover="this.style.color='#f97316'" onmouseout="this.style.color='rgba(255,255,255,.4)'">Начало</a>
+        <span style="color:rgba(255,255,255,.2);">·</span>
+        <a href="#about" style="color:rgba(255,255,255,.4); text-decoration:none; font-size:.85rem; transition: color .2s;" onmouseover="this.style.color='#f97316'" onmouseout="this.style.color='rgba(255,255,255,.4)'">За проекта</a>
+        <span style="color:rgba(255,255,255,.2);">·</span>
+        <a href="#goals" style="color:rgba(255,255,255,.4); text-decoration:none; font-size:.85rem; transition: color .2s;" onmouseover="this.style.color='#f97316'" onmouseout="this.style.color='rgba(255,255,255,.4)'">Цели</a>
+        <span style="color:rgba(255,255,255,.2);">·</span>
+        <a href="#partners" style="color:rgba(255,255,255,.4); text-decoration:none; font-size:.85rem; transition: color .2s;" onmouseover="this.style.color='#f97316'" onmouseout="this.style.color='rgba(255,255,255,.4)'">Партньори</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SCRIPTS ═══════════════════════════ -->
+<script>
+  // Mobile menu
+  const btn = document.getElementById('menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  const bar1 = document.getElementById('bar1');
+  const bar2 = document.getElementById('bar2');
+  const bar3 = document.getElementById('bar3');
+  let open = false;
+  btn.addEventListener('click', () => {
+    open = !open;
+    menu.classList.toggle('open', open);
+    bar1.style.transform = open ? 'translateY(8px) rotate(45deg)' : '';
+    bar2.style.opacity = open ? '0' : '1';
+    bar3.style.transform = open ? 'translateY(-8px) rotate(-45deg)' : '';
+  });
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    open = false; menu.classList.remove('open');
+    bar1.style.transform = ''; bar2.style.opacity = '1'; bar3.style.transform = '';
+  }));
+
+  // Intersection Observer for fade-in
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+
+  // Form submit
+  function handleSubmit(btn) {
+    const inputs = btn.closest('.bg-white').querySelectorAll('input, textarea');
+    let valid = true;
+    inputs.forEach(i => { if (!i.value.trim()) { i.style.borderColor = '#ef4444'; valid = false; } else { i.style.borderColor = ''; } });
+    if (!valid) return;
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Съобщението е изпратено!';
+    btn.style.background = '#16a34a';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Изпрати съобщение';
+      btn.style.background = ''; btn.disabled = false;
+      inputs.forEach(i => i.value = '');
+    }, 3500);
+  }
+
+  // Active nav highlight on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+    navLinks.forEach(l => {
+      l.style.color = l.getAttribute('href') === '#' + current ? '#f97316' : '';
+    });
+  });
+</script>
+
+</body>
+</html>
